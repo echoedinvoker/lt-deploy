@@ -24,15 +24,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # 啟用 Apache 模組
 RUN a2enmod rewrite
 
-# 修改 Apache DocumentRoot 到 CodeIgniter 入口點
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-
-# 調整 Apache 配置文件
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/000-default.conf
-
-# 設定工作目錄（非必要，但乾淨）
-WORKDIR /var/www/html/public
-
+# 設定工作目錄
+WORKDIR /var/www/html
 
 # 複製並安裝 PHP 依賴
 COPY composer.json composer.lock ./

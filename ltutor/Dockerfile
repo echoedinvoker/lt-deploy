@@ -34,6 +34,11 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interactio
 # 複製應用程式檔案
 COPY . .
 
+# 設定權限
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html \
+    && chmod -R 777 /var/www/html/writable
+
 # 複製 Apache 配置
 COPY apache-config.conf /etc/apache2/sites-available/000-default.conf
 

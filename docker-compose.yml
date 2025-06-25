@@ -21,6 +21,8 @@ services:
       - CI_ENVIRONMENT=production
     networks:
       - app-network
+    depends_on:
+      - redis
 
   redis:
     image: redis:7-alpine

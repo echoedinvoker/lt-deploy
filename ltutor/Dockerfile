@@ -31,13 +31,6 @@ WORKDIR /var/www/html
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
 
-#ENV
-ENV CI_ENVIRONMENT=production
-ENV REDIS_IP = 127.0.0.1
-ENV REDIS_PORT = 6379
-ENV APP_KEY=example_key_123
-
-
 # 複製應用程式檔案
 COPY . .
 

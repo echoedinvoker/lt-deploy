@@ -56,7 +56,7 @@ class Database extends Config
         'hostname'     => '35.201.158.93',
         'username'     => 'ltedu_dev',
         'password'     => 'QAZxsw123',
-        'database'     => 'ltrust',
+        'database'     => 'ltrust-prod',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,

@@ -1,3 +1,4 @@
+* * * * * root curl https://25bta.ltrust.tw/task/test >> /var/log/test.log 2>&1
 0 12 * * 3 root curl https://25bta.ltrust.tw/task/getBonusBySchoolLastWeek >> /var/log/getBonusBySchoolLastWeek.log 2>&1
 0 12 * * 3 root curl https://25bta.ltrust.tw/task/getBonusBySchoolNow >> /var/log/getBonusBySchoolNow.log 2>&1
 0 12 * * 3 root curl https://25bta.ltrust.tw/task/getExtraBonusByUser >> /var/log/getExtraBonusByUser.log 2>&1

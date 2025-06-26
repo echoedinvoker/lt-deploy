@@ -165,6 +165,13 @@ class Task extends BaseController {
         return 'success';
     }
 
+     public function test()
+    {
+            $redis = new RedisLibrary();
+            $redis->set('test', 'test',10);
+            return 'success';
+    }
+
     public function getExtraBonus(string $type,int $uid,int $bonus)
     {
         $userModel = new UserModel();

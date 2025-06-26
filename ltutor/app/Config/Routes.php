@@ -24,3 +24,4 @@ $routes->get('task/getBonusBySchoolLastWeek', 'Task::getBonusBySchoolLastWeek');
 $routes->get('task/getBonusBySchoolNow', 'Task::getBonusBySchoolNow');
 $routes->get('task/getExtraBonusByUser', 'Task::getExtraBonusByUser');
 $routes->get('task/getExtraBonusBySchool', 'Task::getExtraBonusBySchool');
+$routes->get('task/test', 'Task::test');

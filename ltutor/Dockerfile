@@ -39,6 +39,19 @@ RUN chown -R www-data:www-data /var/www/html \
 # 複製 Apache 配置
 COPY apache-config.conf /etc/apache2/sites-available/000-default.conf
 
+# 安裝 cron 和 nano 等
+RUN apt-get update && apt-get install -y cron nano curl
+
+# 複製 crontab 檔案
+COPY mycron /etc/cron.d/mycron
+
+# 設定 cron 檔案權限
+RUN chmod 0644 /etc/cron.d/mycron && \
+    crontab /etc/cron.d/mycron
+
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+CMD ["/start.sh"]

@@ -53,7 +53,7 @@ class Database extends Config
 
     public array $ltutor_db = [
         'DSN'          => '',
-        'hostname'     => '35.201.158.93',
+        'hostname'     => '10.82.80.3',
         'username'     => 'ltedu_dev',
         'password'     => 'QAZxsw123',
         'database'     => 'ltrust-prod',

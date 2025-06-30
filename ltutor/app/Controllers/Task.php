@@ -129,9 +129,7 @@ class Task extends BaseController {
             $this->getExtraBonus('user',$v['user_id'],500);
             $notifications['user_id']=$v['user_id'];
             $usernotificationsModel->add($notifications);
-            var_dump($v['user_id']);
         }
-        exit();
         return 'success';
     }
 
@@ -199,6 +197,13 @@ class Task extends BaseController {
             }
         }
         return 'success';
+    }
+
+         public function test()
+    {
+            $redis = new RedisLibrary();
+            $redis->set('test', 'test',10);
+            return 'success';
     }
 
     public function getExtraBonus(string $type,int $uid,int $bonus)

@@ -1,3 +1,7 @@
 #!/bin/bash
-cron
-apache2-foreground
+
+echo "Starting cron..."
+/usr/sbin/cron
+
+echo "Starting Apache..."
+exec apache2-foreground

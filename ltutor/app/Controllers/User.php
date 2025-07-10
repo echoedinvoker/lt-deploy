@@ -115,9 +115,9 @@ class User extends BaseController {
 
     public function getUserInfo(string $userToken)
     {
-        $apiUrl = 'https://vendor-uat.ltrust.tw/api/vendor/user/info';  
-        $clientId = '745737a8-c4b3-4e72-bb04-f58ca1d61de6';  
-        $key = 'edc54ec3cd2beff2184b987b4238d49b';            
+        $apiUrl = 'https://vendor.ltrust.tw/api/vendor/user/info';  
+        $clientId = '4a4da231-c514-47d2-93f6-7be70c770a84';  
+        $key = '65f8591f2edb818cb67b3b31713d6e16';            
         $token = $userToken;            
 
         $ch = curl_init();

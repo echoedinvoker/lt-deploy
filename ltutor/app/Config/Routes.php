@@ -11,7 +11,6 @@ $session = session();
 $routes->post('/', 'Home::index');
 
 $routes->post('login', 'User::login');
-$routes->get('logout', 'User::logout');
 $routes->get('getSchoolList', 'User::getSchoolList');
 $routes->post('getToken', 'User::getToken');
 

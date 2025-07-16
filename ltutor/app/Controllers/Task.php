@@ -243,4 +243,13 @@ class Task extends BaseController {
         return $date;
     }
 
+    public function test(){
+        $now = Time::now($this->tz);
+
+        $redis = new RedisLibrary();
+        $redis->set('CRON_WORK_'.$now ,'',3600*24);
+
+        return 'success';
+    }
+
 }

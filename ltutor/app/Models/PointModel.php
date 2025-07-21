@@ -3,6 +3,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 use Config\Database;
+use CodeIgniter\I18n\Time;
 
 class PointModel extends Model
 {
@@ -21,6 +22,8 @@ class PointModel extends Model
         'description',
         'success',
         'error_message',
+        'created_at',
+        'updated_at',
     ];  // 可插入欄位
     protected $useTimestamps = true;       // 如果表中有 created_at / updated_at 欄位
 
@@ -41,13 +44,15 @@ class PointModel extends Model
             'points'  => $bonus, 
             'before_points'  => $before, 
             'after_points'  => $before + $bonus, 
-            'point_balance'  => $bonus, 
+            'point_balance'  => $before + $bonus, 
             'type'  => 'BONUS', 
             'transaction_type'  => 'SYSTEM', 
             'operation'  => 'ADD',
             'title'  => '領取網頁活動任務獎勵',
             'description'  => $description.'任務獎勵',
             'success'  => 1,
+            'created_at'  => Time::now('UTC')->toDateTimeString(),
+            'updated_at'  => Time::now('UTC')->toDateTimeString(),
             ];
 
             $this->insert($data);
@@ -66,6 +71,20 @@ class PointModel extends Model
         }
     }
 
+    public function checkBonusExist(int $uid,string $description,string $start,string $end)
+    {
+        $data = $this->select('user_users.id,user_points_transactions.points')
+                    ->join('user_users', 'user_users.id = user_points_transactions.user_id', 'left')
+                    ->where('user_points_transactions.operation','ADD')
+                    ->where('user_points_transactions.transaction_type','SYSTEM')
+                    ->where('user_users.id', $uid)
+                    ->where('user_points_transactions.description', $description)
+                    ->where("CONVERT_TZ(user_points_transactions.created_at, '+00:00', '+08:00') >=", $start)
+                    ->where("CONVERT_TZ(user_points_transactions.created_at, '+00:00', '+08:00') <=", $end)
+                    ->findAll();
+                  
+        return $data;
+    }
 }
 
 ?>

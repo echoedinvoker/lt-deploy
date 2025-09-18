@@ -2,8 +2,11 @@
 namespace App\Controllers;
 
 use App\Models\UserModel;
+use App\Models\UserPsychologicalModel;
+use App\Models\UserNotificationsModel;
 use App\Libraries\JwtLibrary;
 use App\Libraries\RedisLibrary;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class User extends BaseController {
 	public function login()
@@ -145,5 +148,142 @@ class User extends BaseController {
         }
 
         curl_close($ch);
+    }
+
+    public function sendMessage()
+    {
+        $data = explode(",", $_REQUEST['ids']);
+        $notifications['title']='系統調整通知';
+        $notifications['content']='親愛的同學 ，您好：
+
+        非常感謝您參與本次Lucky7紅利提款機校際活動！
+
+
+        因系統異常，導致部分帳號誤發放 1,000 點獎勵紅利。經技術團隊確認後，已進行回收處理，造成您的困擾，我們深感抱歉，敬請見諒。
+
+
+        LTrust學習平台將持續優化系統，並確保活動機制公平、穩定，感謝您的理解與支持！
+
+        
+        
+        ';
+        $notifications['name']='task_achievement_claim_reward_back';
+        $usernotificationsModel = new UserNotificationsModel();
+
+        foreach($data as $k => $v){
+            $notifications['user_id']=$v;
+            $usernotificationsModel->add($notifications);
+        }
+        return 'success';
+    }
+
+    public function readExcel()
+    {
+        $file = $this->request->getFile('excel');
+
+        if (!$file->isValid()) {
+            return $this->response->setJSON(['success' => false, 'message' => '檔案無效']);
+        }
+
+        // 讀取 Excel 檔案
+        $spreadsheet = IOFactory::load($file->getTempName());
+        $sheet = $spreadsheet->getActiveSheet();
+        $data = $sheet->toArray(); // 轉成陣列格式
+
+        $userModel = new UserModel();
+        $userPsychologicalModel = new UserPsychologicalModel();
+        $usernotificationsModel = new UserNotificationsModel();
+        foreach($data as $k => $v){    
+            if ($k === 0) continue;
+
+            // 確保 Email 存在
+            if (!isset($v[2]) || !filter_var($v[2], FILTER_VALIDATE_EMAIL)) {
+                continue;
+            }
+
+            $res = $userPsychologicalModel->checkEmailExist($v[2]);
+            if($res!=null){
+                $info = $userModel->getUserInfoByEmail($res);
+            if($info != 0){
+                $userPsychologicalModel->add($info['id'],$v[2],1);
+                $pointsRes = $userModel->updateBonus($info['id'],3000,$info['bonus_points']);
+                if($pointsRes == 'success'){
+                    $notifications['title']='心理測驗活動獎勵';
+                    $notifications['content']='親愛的同學 ，您好：
+
+                    感謝您參加本次 LTrust 所推出的「你是哪種學習型人格」心理測驗活動！
+
+                    您已完成 email 登記，我們已為您發送 3000 點紅利至帳戶中。
+
+                    紅利可用於兌換 LTrust 上的各項學習服務，目前 S.E.N.S.E.I 解題教練問到飽 正在進行中，同學不要害羞，免費期間盡量用起來！
+
+                    此外，平台也同步舉辦「紅利提款機挑戰賽」，可以再LTrust首頁BANNER上找到「Lucky7 紅利提款機大賽」的活動喔！天天完成任務還能額外賺紅利，快來看看吧💰
+
+                    ';
+                    $notifications['user_id']=$info['id'];
+                    $usernotificationsModel->add($notifications);
+                    }              
+                } 
+                else{
+                    $userPsychologicalModel->add(0,$v[2],0);
+                }
+            }  
+        }
+        return $this->response->setJSON(['success' => true]);
+    }
+
+            public function readExcelRegister()
+    {
+        $file = $this->request->getFile('excel');
+
+        if (!$file->isValid()) {
+            return $this->response->setJSON(['success' => false, 'message' => '檔案無效']);
+        }
+
+        // 讀取 Excel 檔案
+        $spreadsheet = IOFactory::load($file->getTempName());
+        $sheet = $spreadsheet->getActiveSheet();
+        $data = $sheet->toArray(); // 轉成陣列格式
+
+        $userModel = new UserModel();
+        $userPsychologicalModel = new UserPsychologicalModel();
+        $usernotificationsModel = new UserNotificationsModel();
+        foreach($data as $k => $v){
+            if ($k === 0) continue;
+
+            // 確保 Email 存在
+            if (!isset($v[2]) || !filter_var($v[2], FILTER_VALIDATE_EMAIL)) {
+                continue;
+            }
+
+            $res = $userPsychologicalModel->checkEmailExist($v[2]);
+            if($res!=null){
+                $info = $userModel->getUserInfoByEmail($res);
+            if($info != 0){
+                $userPsychologicalModel->add($info['id'],$v[2],1);
+                $pointsRes = $userModel->updateBonus($info['id'],100,$info['bonus_points']);
+                if($pointsRes == 'success'){
+                    $notifications['title']='叫我註冊王email活動獎勵';
+                    $notifications['content']='親愛的同學 ，您好：
+
+                    叮咚～龍騰高中聲 LINE 推播好禮來囉！🎉
+
+                    恭喜同學獲得 100 紅利！
+
+                    這 100 紅利可用於購買「叫我註冊王」活動推薦碼，邀請同學一起註冊 LTrust！邀請越多朋友註冊完成，就有機會獲得最高 新台幣 3,000 元獎金。天大好機會不要錯過啦！
+
+                    想知道更多「叫我註冊王」活動資訊 👉 https://cmrk.ltrust.tw/
+
+                    ';
+                    $notifications['user_id']=$info['id'];
+                    $usernotificationsModel->add($notifications);
+                    }              
+                } 
+                else{
+                    $userPsychologicalModel->add(0,$v[2],0);
+                }
+            }
+        }
+        return $this->response->setJSON(['success' => true]);
     }
 }

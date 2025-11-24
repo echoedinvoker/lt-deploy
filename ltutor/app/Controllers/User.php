@@ -283,6 +283,71 @@ class User extends BaseController {
         return $this->response->setJSON(['success' => true]);
     }
 
+            public function readExcelSend()
+    {
+        $file = $this->request->getFile('excel');
+
+        if (!$file->isValid()) {
+            return $this->response->setJSON(['success' => false, 'message' => '檔案無效']);
+        }
+
+        // 讀取 Excel 檔案
+        $spreadsheet = IOFactory::load($file->getTempName());
+        $sheet = $spreadsheet->getActiveSheet();
+        $data = $sheet->toArray(); // 轉成陣列格式
+
+        $userModel = new UserModel();
+        $userPsychologicalModel = new UserPsychologicalModel();
+        $usernotificationsModel = new UserNotificationsModel();
+        foreach($data as $k => $v){var_dump($v[1]);
+            if ($k === 0) continue;
+
+            // 確保 Email 存在
+            if (!isset($v[1]) || !filter_var($v[1], FILTER_VALIDATE_EMAIL)) {
+                continue;var_dump($v[1]);var_dump("!!!!!!");
+            }
+
+            $res = $userPsychologicalModel->checkEmailExist($v[1]);
+            if($res!=null){
+                $info = $userModel->getUserInfoByEmail($res);
+            if($info != 0){
+                $userPsychologicalModel->add($info['id'],$v[1],1,'學測通行證通知');
+                $notifications['title']='【限時 33 折】國英數 210 題精選＋全科 Qbot 問到飽｜高三學測通行證開賣！';
+                    $notifications['content']='同學您好：
+
+                        學測進入倒數，最完整、最划算的備考組合 「高三專屬｜學測通行證」 已正式推出！
+
+                        我們把你在最後衝刺階段最需要的工具全部一次打包：
+
+                        ✔S.E.N.S.E.I 國英數精選題組（每科 70 題，共 210 題）
+
+                        拍題就能立即看到 清楚解析＋題型提醒，協助你補強基礎、掌握常錯題。
+
+                        ✔Qbot 全科刷題問到飽
+
+                        不限科目、不限冊次，想練就練，隨時保持手感不生鏽。
+
+                        原價加起來共 6,067 元，現在 限時 33 折，只要 1,980 元 就能一次擁有。
+                        ________________________________________
+                        Q：通行證在哪裡購買？
+
+                        A：登入後回首頁，右上角購物車旁的 【通】ICON 就能找到購買入口！
+                        ________________________________________
+                        有 AI 幫你拆題，有題庫陪你練熟，讓你在剩下的時間更有效率、更有方向。
+
+                        祝你備考順利，離目標大學再近一步。
+
+                        — LTrust 團隊
+
+                    ';
+                    $notifications['user_id']=$info['id'];
+                    $usernotificationsModel->add($notifications);
+                    }  
+            }
+        }
+        return $this->response->setJSON(['success' => true]);
+    }
+    
     public function supplyLog()
     {
         $userPsychologicalModel = new UserPsychologicalModel();
